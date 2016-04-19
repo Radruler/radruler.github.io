@@ -52,11 +52,11 @@ The only current \(2015+\) method is through [Sunshine](http://theroot.ninja/), 
 ### SuperCID
 Changing the CID to SuperCID 11111111 bypasses the M(odel)ID and C(arrier)ID checks during FW flash / RUU to allow the loading of version mismatched FWs (ie. HK vs non-HK, downgrades) in addition to bypassing official signature verification for unsigned firmware zips.  Please note your device's true CID via `fastboot getvar cid` and have it known for finding proper RUUs and other firmware-centric files.
 
-```
-    adb reboot bootloader
-    fastboot oem rebootRUU
-    fastboot oem writecid 11111111
-    fastboot reboot-bootloader
+```bash
+adb reboot bootloader
+fastboot oem rebootRUU
+fastboot oem writecid 11111111
+fastboot reboot-bootloader
 ```
 ## Firmware Modification
 A [thread](here) gives a very thorough explination of the different types of hardware flashing.  The brief overview:
@@ -616,192 +616,20 @@ Any other error that says 'please flush image again immediately'
 You need to run only the flash command again (not the whole set of commands, just the fastboot flash command.) Please post the complete error code here & when the error occurred so that it can be added to this list
 
 
----
-#Backups
-- `\mnt\sd0\ [Internal Storage]`
-	- Images:
-		- Autodesk
-		- DCIM
-		- Download
-		- Pictures
-		- Snapchat
-		- Snapseed
 
-- App List:
-	- chrome beta
-	- maps{
-		- gmaps
-		- waze
-		- citymapper
-	- htc tv
-	- mail{
-		- gmail
-		- inbox
-	- cal
-	- media{
-		- youtube
-		- play movies/tv
-		- chromecast
-		- bandcamp
-		- play books
-		- netflix [rm]
-		- remote desktop
-		- soundcloud
-		- play music
-		- twitch
-		- spotify
-		- beatport
-	- social media{
-		- fb
-		- tumblr
-		- insta
-		- vine
-		- 500px [?rm]
-		- weasyl
-		- g+
-		- pixiv
-	- chat{
-		- fb messenger
-		- skype
-		- snapchat
-		- groupMe [rm]
-		- grindr [rm]
-		- telegram
-		- fb groups
-		- steam
-	- clock
-	- keep
-	- photo editing{
-		- adobe revel [rm]
-		- ps express
-		- pixlr
-		- htc camera
-		- htc gallery
-		- snapseed
-	- auth{
-		- authy
-		- bnet auth
-		- rift aith
-	- news{
-		- feedly
-		- pocket
-		- play newsstand
-	- location{
-		- 4sq
-		- yelp
-		- opentable
-		- untappd
-		- swarm
-	- cloud{
-		- dropbox
-		- drive
-		- onedrive
-		- flickr
-		- imgur
-		- mega
-	- g+ photos
-	- moves
-	- finance{
-		- paypal here [rm] ->ios
-		- square register [rm] -> ios
-		- mint
-		- personal capital [rm] -> ios
-		- sigfig [rm] -> ios
-	- twitter
-	- events{
-		- meetup
-		- eventbrite
-		- guidebook
-	- payment
-		- paypal
-		- square cash
-		- coinbase
-		- belly
-		- sbux
-		- levelup
-		- sq order
-		- wallet
-		- 5stars
-	- nfc{ [rm]
-		- nfc passport reader [rm]
-		- farebot [rm]
-	- shopping{
-		- redlaser
-		- ebay
-		- google shopex
-		- etsy
-		- vivino
-		- safeway
-		- cartwheel
-		- taco bell
-		- panda express
-		- airbnb
-	- productivity{
-		- evernote
-		- trello
-		- producteev
-		- udemy
-	- games{
-		- hiversaries
-		- monument valley
-		- spaceteam
-		- hearthstone
-		- cytus
-		- technika q
-		- playstation
-		- mgsv gz
-		- mtg familiar
-		- htc{
-			- shit
-	- google{
-		- less shit
-	- tools{
-		- ifttt
-		- greenify
-		- es file explorer
-		- terminal emulator
-		- speedtest
-		- connectbot
-		- tasker
-		- firefox
-		- crashalytics beta [weasyl dep]
-		- moto connect
-		- android wear
-	- acaia coffee
-	- rare tools{
-		- aruba utils
-		- viper4android
-		- firefox beta
-		- tockle
-		- sunrise
-		- nfc tools
 
-pages
-blank
-feedly
-blank
-crd - waze - spotify - twit
-dock
-phone swarm hangouts camera
- ---
-blank
-2_keep widget
-4x2 gnow
- ---
-sunrise 2x3
- ---
-trello assigned
-
-##HTC M7 System Partition Protection
+## HTC M7 System Partition Protection
 HTC protects `\system` with some kernel code.  This is circumvented by a popular script,  [wp_mod.ko][wp_mod_thread] \([compiled][wp_mod.ko] \| [source][wp_mod.c]\), which is customized to the **current kernel version**.  In short, it uses `kallsyms_lookup_name` to find `mmc_blk_setup_wp_protection_partno` and nullifying its contents.  Documentation in the thread states this must load at boot otherwise system will behave unpredictably.
 
-####Usage:
+#### Usage:
 
-    insmod /system/lib/modules/wp_mod.ko
-    mount -o remount,rw /system
+```bash
+insmod /system/lib/modules/wp_mod.ko
+mount -o remount,rw /system
+```
 Load by adding to `init.rc` in `boot.img` either directly or as an `init.d` script.
 
-####Modification:
+#### Modification:
 check kernel version with `uname -a`
 
 _\[lazy version\]_ hex edit wp_mod.ko directly for the new kernel version.  source version is `3.0`.
@@ -842,9 +670,8 @@ http://forum.xda-developers.com/showthread.php?t=1231249
 http://forum.xda-developers.com/showthread.php?t=2497614
 http://forum.xda-developers.com/showthread.php?t=2534428
 https://www.reddit.com/r/htcone/comments/2oxjoc/ruu_wont_run_as_administrator/
-htc iq info http://forum.xda-developers.com/showthread.php?t=1247108
-logging test app
-http://forum.xda-developers.com/showpost.php?p=17612559&postcount=110
+[htc iq info](http://forum.xda-developers.com/showthread.php?t=1247108)
+[logging test app](http://forum.xda-developers.com/showpost.php?p=17612559&postcount=110)
 http://androidsecuritytest.com/features/system-tools/services/
 http://stackoverflow.com/questions/20593497/remove-the-setup-wizard-app-in-android-4
 
