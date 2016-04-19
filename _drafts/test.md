@@ -1,3 +1,9 @@
+---
+layout: page
+title:  "HTC One M8 Modification Guide"
+date:   2016-04-08 12:00:00
+---
+
 ## Preface
 
 First and foremost, this is a guide on how to learn.  You can find tutorials for any single step of this process anywhere, but no place compiles information on how to obtain your own answers this concisely.  The goal of this document is to allow the reader to unlock and modify Android devices, but in this case specifically the HTC One M8 Sprint (Harmon Kardon Edition).  The specificty of this device prevents it from being easily documented in other guides simply due to the rarity of its backups along with off-cycle updates and prepackaed invasive bloatware, thus requiring a decent knowledge of how to discover and find answers for oneself.  Often, packages here will be completely undocumented and their removal or modification can completely break device functionality, being extremely frustrating to repair.  I have yet to encounter an unfixable situation, aside from maybe unplugging the device during a failed firmware flash.  If you find yourself there, consider skipping to the section on [manually flashing an RUU](#RUU-Extraction) in a panic.  Remember - hope is never lost.  Errors will occur then disappear when trying again.  That stated, not every piece of advice has been tested here.  I've documented many posts, some of which I did not need to follow.  Your mileage will vary.  You have been warned.
