@@ -491,7 +491,7 @@ One M8 WHL:
 
 ---
 
-#Things I don't immediately use
+# Things I don't immediately use
 
 #### M7
 ## System Partition Protection
@@ -511,18 +511,18 @@ ___Requires___: Root, Custom Recovery
 [wp_mod.c_m8]: https://github.com/flar2/wp_mod
 
 
-##Unlock SIM
+## Unlock SIM
 
 ---
 
-##Reference Threads
+## Reference Threads
 [VomerGuides - Mega Info Post](http://forum.xda-developers.com/htc-one-m8/general/vomerguides-m8-bootldr-unlock-s-off-t2800727)
 [Hboot Info](http://forum.xda-developers.com/showthread.php?t=2700666)
 [XDA: OMJ - RUU / FW / Stock Rooted /  4.25.65x.14 / Sprint One M8](http://forum.xda-developers.com/showthread.php?t=2729173)
 [XDA: thoughtlesskyle - Disable Boomsound Icon](http://forum.xda-developers.com/showthread.php?t=2726774)
 [XDA: Sneakyghost -FUU \(no /system\) w/ Troubleshooting](http://forum.xda-developers.com/htc-one-m8/development/progress-fuu-m8-t2813792)
 
-##Customization
+## Customization
 [XDA: jobo - Boot Splash Screen]\([thread](http://forum.xda-developers.com/htc-one-m8/themes-apps/mod-customize-boot-splash-online-splash-t2817059) \| [tool](http://jobiwan.net:81/bootsplash-m8)\)
 
 ---
