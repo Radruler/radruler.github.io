@@ -17,7 +17,7 @@ Force Power Off: VolUp + Power 10sec (when device is on)
 
 Bootloader: VolDown + Power (when device is off)
 
-### Unlock Bootloader w/ HTC
+### Unlock Bootloader w/ HTC (literally everything requires this)
 - Register at [HTC Dev](http://www.htcdev.com/)
 - Enable Developer Mode by Settings -> About -> Software Information -> More -> tap Build Number 10 times.
 - Dev settings enabled (tap version 10 times), fastboot off
@@ -82,23 +82,24 @@ A [thread](here) gives a very thorough explination of the different types of har
 
 ### Flash using HBoot
 
-Or, rename the firmware zip to `0P6BIMG.zip` (For M8_WHL) and place in the root of `external_sd` (the physical SD card in your device).  Reboot into Bootloader and switch to HBoot, which checks for this file and attempts to flash it on boot if present.
+Or, rename the firmware zip to `0P6BIMG.zip` (For M8_WHL, other variants maybe?) and place in the root of `external_sd` (the physical SD card in your device).  Reboot into Bootloader and switch to HBoot, which checks for this file and attempts to flash it on boot if present.
 
 Only signed, higher version firmwares will be accepted by S-ON devices - obtain these by [extracting them from an RUU](#RUU-Extraction) or downloading OTA updates.
 
 For S-OFF, many unsigned FWs are available at [XDA: skulldreamz - Firmware Flashing without panic attacks](http://forum.xda-developers.com/htc-one-m8/development/firmware-flashing-panic-attacks-t2824048) along with instructions for SuperSU and a suggestion to GPE before going back to Sense to cleanly install, allowing you to switch carrier images at will.  Do note the hardware radios are physically different and your mileage may vary from unintended stock images.
 
 ### Partial Flash
-Sometimes one might want to update the firmware without a device wipe. Nowadays, the `rom.zip` in the RUU is encrypted and is [annoying to snag decrypted segments of](#ruu-decryption) to the end user anyways, further complicating the problem. Fortunately, if you have your [stock baseband and bootloader versions], partial FW Flashes can be performed:
+Sometimes one might want to update the firmware without a device wipe. Nowadays, the `rom.zip` in the RUU is encrypted and is [annoying to snag decrypted segments of](#ruu-decryption) to the end user anyways, further complicating the problem. Fortunately, if you have your _stock baseband and bootloader versions_, partial FW Flashes can be performed with:
 
 `fastboot flash <partiton> disk.img`
 
 You can find a list of valid partitions by using `cat /proc/emmc` on the device or check [Sneaky's Partition Dump](https://docs.google.com/spreadsheets/d/1uTfhr5sUFpdYKpHMFOOUnb1T5kOBu411_rcEb_Fz37A/edit#gid=0) if you're lazy. Commonly, this is used as `fastboot flash recovery recovery.img` to install TWRP, but this can be modified to apply directly to any partition.  It's also usually prefaced and followed by a `fastboot erase cache` (which should warn about possibly wanting to format instead) so that you don't run into a failure code flashing large images or run into corruption.
 
 - [Stock Recovery Thread](http://androidforums.com/threads/guide-re-flash-stock-rom-ruu-after-bricking-a-rooted-device.565203/)
-- Stock Boot Thread?
 
 ## Stock Image Modification
+
+Here's the part that I really care about.  For reference, my workflow is: RUU, TWRP, gut the system files manually through shell or TWRP local commands, then perform firstboot without most Sprint malware to prevent fetching of further system modifications.
 
 Useful Commands:
 
@@ -108,11 +109,11 @@ Useful Commands:
 - `pm path com.name.name`
 - todo: PM Uninstall
 
-When you see the wizard activity on top, use "dumpsys activity" to see its package/class name, and use "pm path com.wizard.name" to find the apk.
+When you see the wizard activity on top, use `dumpsys activity` to see its package/class name, and use `pm path com.wizard.name` to find the apk.
 
-See [below](#futurelink) for a list of my personal removed packages.  Context: I'm okay with Google "spyware" but not any other invasive tracking, since those generally take a higher performance hit. Your mileage may vary.
+### ItsOn [Sprint Only]
 
-___WARNING:___ ItsOn is a reporting application from Sprint that may pertain to month-to-month minute tracking and billing.  It anchors deep into system calls for standard phone operation.  Its removal may inhibit your ability to receive or place calls.
+___WARNING:___ ItsOn is a reporting application from Sprint that may pertain to month-to-month minute tracking and billing.  It anchors deep into system calls for standard phone operation.  Its removal may inhibit your ability to receive or place calls. While you're here, consider removing support for DM Commands since, you know.  They're [horrendiously insecure](https://www.blackhat.com/docs/us-14/materials/us-14-Solnik-Cellular-Exploitation-On-A-Global-Scale-The-Rise-And-Fall-Of-The-Control-Protocol.pdf).
 
 ItsOnService has a shell script found in `/system/vendor/itson/` which nicely defines much of is behaivor and defines the libraries it loads and may install to `/system/lib`.  It's recommended to read through it and check locations it may be installing extra copies to. Remove it from:  <sub>[credit](http://forum.xda-developers.com/showpost.php?p=56571550&postcount=2732)</sub>
 
@@ -125,6 +126,235 @@ del /system/vendor/itson
 del /system/priv-app/ItsOnUID.apk
 ```
 
+### Other Stock Gutting
+
+For my own tracking, here's my full workflow for cleaning a stock non-GPE rom before use.  The app optimization runs twice, which is an antagonizingly long wait.  Prepare with some lunch, or a game to play while this runs.
+
+- Relock, flash same version RUU, boot, no credentials, OTA, apply OTA, get new RUU, clean RUU for new FW.
+- Boot, no sim / no wifi, perform dry setup and immediately power off
+- flash unlock.bin, wait for another format, reboot into recovery, TWRP
+- remove itsOn, sprint apps [Phase 1]
+- Install Google Launcher, reboot, remove Prism [Phase 2]
+
+```
+# Phase 1 / Safe
+
+/carrier/itson/*
+/system/vendor/itson/*
+/system/priv-app/ItsOnUID.apk
+
+/system/customize/
+	CID/{all except default.xml}
+	resource/
+		HTC_Sense5_Boot.mp3
+		Startup.mp3
+		spcs_*
+		vm_*
+		hTC_*
+		BM_*
+/system/app/
+	mocanaKeyVpnF/
+	KidMode-google/
+	??keychain/
+	QXDM2SD/
+	PartnerBookmarksProvider/
+
+/system/priv-app/
+	AndroidHtcSync/
+	Automotive*/
+	Backup*/
+	Carrier*/
+	com.qualcomm.location/
+	CheckinProvider/
+	DemoFLOPackageInstaller/
+	DrawingBoard/
+	Facebook/
+	FieldTrial/
+	HTCAdvantage/
+	HtcContactsDNATransfer/
+	HTC_IME/ 			# please make sure you have another keyboard installed first
+	HomePersonalize/
+	HtcDotMatrix/
+	HTCMode/
+	HTCZero/
+	ID/
+	Lookout/
+	Lucy/
+	NeroHTCInstaller/
+	PNSClient/
+	PolarisOffice/
+	PrefAct/
+	Sprint*/
+	Twitter/
+	Transfer/
+	UDove/ #htc logging
+
+
+
+
+
+# Phase 2 / Eh.
+
+/system/app/
+	2227...guide/
+	com.qualcomm.*/
+	FaceLock/
+	HTC_CIR/
+	HtcAccessoryService/
+	HTCBackup*/
+	htcCarGps/
+	HtcLogLevel/
+	MyHTC/
+	News_Republic/
+	MyGoogleTaskPlugin/
+	MyTask/
+	PartnerBookmarksProvider/
+	Smith/
+	SPCS_vowifi/
+	Sprint_Smart_Device_Manager/
+
+/system/priv-app/
+	HTCSpeakCyberon/
+	iCloudTransfer/
+	Instagram_SN_Plugin/
+	LinkedIn_FsPlugin/
+	LMW/
+	xtra_t_app/ #qualcomm location
+
+
+
+
+# Phase 2.5 / Breaking Things (ie. Phone)
+	DeviceManagement/
+	DMAgent/
+	HTC_Connect/
+	HtcMessageProvider/
+	HtcOMADM_*_SPCS/
+	HtcResetNotify/
+	HtcSetupWizard/
+	IME*/
+	PeelSmartRemote/
+	AntHalService/
+
+/system/priv-app/
+	HtcDms/
+	HtcOMADM_SPCS/
+	HTCOOBEAdvantage/
+	HtcServicePack/
+	HTCSprintService/
+	Mail/
+	ManagedProvisioning/
+	MirrorLink*/
+	Prism/ 					#be sure to install Now launcher first, Velvet might work
+	QtiTetherService/ #qualcomm
+	UIBC/
+	TetheringGuard/
+	VideoTalkEnhancement/
+
+
+/system/framework/
+	com.qti*/
+	com.sprint.internal/
+
+
+# Phase 3 / I'd Rather Have These In Userland
+
+/system/app/
+	Drive*/
+	Facebook*/
+	FMRadioService/
+	Font*/
+	Gmail2/
+	HoloSpiralWallpaper/
+	Newsstand/
+	NewsWeather/
+	PlusOne/
+	Skype_Stub/
+	Twitter_Client
+
+
+
+```
+### Experimental Removed Apks
+Warning: these provide critical function for phone service.  Functionality loss may occur.
+- odmadm (vdm client)
+- htcloglevel
+	- htc media uploader
+- upadter (ota applier)
+	- cirservice (checks ota)
+- ?qualcomm time
+- htc account (might have to leave for setup)
+- htccupd
+	- htc checkin
+
+do not:
+- htc video ++ dlna
+- calendarstorage
+- configupdater gets a bunch of stuff on boot
+	- see triggers for BOOT_COMPLETED
+
+sysapp
+	nwewsweather (gnews / old)
+	music2 (gp music)
+
+privapp
+	htcmodeclient (autobot)
+notes
+vDM client OK.  controlled by malicious? ODMADM
+look into sprint.internal.LauncherFacade `adb shell pm list features` / jar
+
+
+test1
+	remove (androidhtcsync.apk)
+	check for Sync All
+	works fine
+test2
+
+com.redbend.vdmc == htc_sprint_dmservice thing
+com.sprint.dsa = priv-app\DSS
+com.htc.home.personalize = priv-app\homepersonalize
+com.htc.vte = priv-app\video talk enhanceement
+com.htc.cs.dm = system/app/devicemanagement
+org.simalliance.openmobileapi.service = system/app/smartcardservice
+com.htc.dmportread = /priv-app/dmcommandservice
+
+#### (system/customize/CID/default.xml):
+```
+    <module name="list">
+      <function name="hide_application_list">
+        <set name="single">
+          <item name="1">com.lmi.htc.rescue</item>
+          <item name="2">com.lmi.htc.rescuesecurity</item>
+          <item name="3">com.itsoninc.android.uid</item>
+          <item name="4">com.itsoninc.android.itsonservice</item>
+        </set>
+      </function>
+      <function name="hide_service_list">
+        <set name="single">
+          <item name="1">com.itsoninc.android.uid</item>
+          <item name="2">com.itsoninc.android.itsonservice</item>
+        </set>
+      </function>
+      <function name="unsupport_disable_button_list">
+        <set name="single">
+          <item name="0">com.sprint.dsa</item>
+          <item name="1">com.sprint.zone</item>
+          <item name="2">com.sequent.controlpanel</item>
+          <item name="3">com.coremobility.app.vnotes</item>
+          <item name="4">com.locationlabs.sparkle.yellow.pre</item>
+          <item name="5">com.sprint.w.installer</item>
+          <item name="6">com.birdstep.android.cm</item>
+          <item name="7">com.lookout</item>
+          <item name="8">com.sprint.ce.updater</item>
+          <item name="9">com.kineto.smartwifi</item>
+          <item name="10">com.itsoninc.android.uid</item>
+          <item name="11">com.itsoninc.android.itsonservice</item>
+        </set>
+      </function>
+```
+
+Some [annotated resources](http://www.trcompu.com/MySmartPhone/AListofRezApps.html).
+
 ### Force Enable Tethering
 
 [Overview Thread](http://forum.xda-developers.com/showthread.php?t=2712222) - requiring an `init.d` kernel, this suggests flashing an [iptables script](http://forum.xda-developers.com/showthread.php?t=2474432) named tether that gets placed in `/system/etc` and called on boot with either Script Manager or by injection into `/system/etc/init.post_boot.sh` or `/system/etc/install-recovery.sh`.  Since neither of these candidates are on our Sense6 Stock install, we can guess at init scripts to tack on the extra line of `/system/etc/tether` to flush the routing tables.
@@ -132,7 +362,7 @@ del /system/priv-app/ItsOnUID.apk
 Inject all our script content into `/system/etc/usf_post_boot.sh`. This is what [InsertCoin](https://insertcoin-m7-nightly.googlecode.com/svn/trunk/system/etc/usf_post_boot.sh) does.
 Also steal some script from there.
 
-Watch post-install for "Cellular Radio" %usage to skyrocket.  If it does, disable executable privledge on `tether` (chmod 644 works) and it should revert.
+Watch post-install for "Cellular Radio" %usage to skyrocket.  If it does, disable executable privilege on `tether` (chmod 644 works) and it should revert.
 
 ```bash
 #!/system/bin/sh
@@ -145,19 +375,6 @@ iptables -A natctrl_FORWARD -j DROP
 iptables -A natctrl_nat_POSTROUTING -t nat -o rmnet+ -j MASQUERADE
 ```
 include executable privledge lmao so dont forget to chmod 777
-
-#### 4.x+ changes to Tethering
-
-A native os feature [was introduced](http://pocketnow.com/2015/01/01/nexus-6-tethering) to report if a device is being used to tether in Settings.  This is a key/value pair in the settings.db sqlite3 db (`data/data/com.android.providers.settings/databases`), which can be disabled by setting `tether_dun_required` to `0`.  In a more user-friendly manner:
-```
-adb shell settings put global tether_dun_required 0
-```
-This seems to require IPv6 disabled with a non-hybrid IPv4 APN to be selected in settings.  It is also recommended to add `net.tethering.noprovisioning=true` to `build.prop` accompanying this change.
-
-It is [theorized](http://forum.xda-developers.com/moto-x/themes-apps/tmo-tmobile-native-tether-fix-4-4-2-t2644867) that appending `,dun` to the APN Type list should apply this setting (ie. 'default,mms,supl,hipri,fota,dun').
-
-Lots of information available in [this thread](http://forum.xda-developers.com/nexus-4/general/4-4-3-nexus-4-lte-lte-tethering-hotspot-t2416822) // [github]()
-	The other issue is that this script had to be run each and every boot. Placing the commands within an init.d script does not work because at the time init.d scripts are run in the boot, the natctrl_nat_POSTROUTING rule does not exist, so you cannot append to it. Even if you do create the rule and append to it, the changes will be overwritten when the rules are set later in the boot. The solution is to run the commands within a delayed subshell that alters the firewall after the rules are set. This is what my LTE fix does.
 
 #### APN Modificaiton
 
@@ -221,9 +438,6 @@ echo -ne ‘\x00\x00\x00\x00′ | dd of=/dev/block/mmcblk0p2 bs=1 seek=33796 	# 
 exit
 ```
 
-### Remove Startup Animations (revert to stock)
-
-Look for configuration XML files in `/system/customize/CID`, they will reference zips in `/system/customize/resource` that can be safely removed.
 
 ---
 
@@ -271,48 +485,6 @@ remove play music (android.music)
 
 
 
-### Experimental Removed Apks
-Warning: these provide critical function for phone service.  Functionality loss may occur.
-- odmadm (vdm client)
-- htcloglevel
-	- htc media uploader
-- upadter (ota applier)
-	- cirservice (checks ota)
-- ?qualcomm time
-- htc account (might have to leave for setup)
-- htccupd
-	- htc checkin
-
-do not:
-- htc video ++ dlna
-- calendarstorage
-- configupdater gets a bunch of stuff on boot
-	- see triggers for BOOT_COMPLETED
-
-sysapp
-	nwewsweather (gnews / old)
-	music2 (gp music)
-
-privapp
-	htcmodeclient (autobot)
-notes
-vDM client OK.  controlled by malicious? ODMADM
-look into sprint.internal.LauncherFacade `adb shell pm list features` / jar
-
-
-test1
-	remove (androidhtcsync.apk)
-	check for Sync All
-	works fine
-test2
-
-com.redbend.vdmc == htc_sprint_dmservice thing
-com.sprint.dsa = priv-app\DSS
-com.htc.home.personalize = priv-app\homepersonalize
-com.htc.vte = priv-app\video talk enhanceement
-com.htc.cs.dm = system/app/devicemanagement
-org.simalliance.openmobileapi.service = system/app/smartcardservice
-com.htc.dmportread = /priv-app/dmcommandservice
 
 # Returning to Stock
 
@@ -491,7 +663,20 @@ One M8 WHL:
 
 ---
 
-# Things I don't immediately use
+# Reference Info
+
+#### 4.x+ changes to Tethering
+
+A native os feature [was introduced](http://pocketnow.com/2015/01/01/nexus-6-tethering) to report if a device is being used to tether in Settings.  This is a key/value pair in the settings.db sqlite3 db (`data/data/com.android.providers.settings/databases`), which can be disabled by setting `tether_dun_required` to `0`.  In a more user-friendly manner:
+```
+adb shell settings put global tether_dun_required 0
+```
+This seems to require IPv6 disabled with a non-hybrid IPv4 APN to be selected in settings.  It is also recommended to add `net.tethering.noprovisioning=true` to `build.prop` accompanying this change.
+
+It is [theorized](http://forum.xda-developers.com/moto-x/themes-apps/tmo-tmobile-native-tether-fix-4-4-2-t2644867) that appending `,dun` to the APN Type list should apply this setting (ie. 'default,mms,supl,hipri,fota,dun').
+
+Lots of information available in [this thread](http://forum.xda-developers.com/nexus-4/general/4-4-3-nexus-4-lte-lte-tethering-hotspot-t2416822) // [github]()
+	The other issue is that this script had to be run each and every boot. Placing the commands within an init.d script does not work because at the time init.d scripts are run in the boot, the natctrl_nat_POSTROUTING rule does not exist, so you cannot append to it. Even if you do create the rule and append to it, the changes will be overwritten when the rules are set later in the boot. The solution is to run the commands within a delayed subshell that alters the firewall after the rules are set. This is what my LTE fix does.
 
 #### M7
 ## System Partition Protection
@@ -568,53 +753,73 @@ gsd.apk = ##3424## safe to remove
 ---
 
 Error Codes
+```
 Error 150: ROM upgrade utility error
 This is most likely an error when you use Windows Vista.
+
 Error [170]: USB Connection error
 The RUU cannot connect to your device.
+
 Drivers not present or not installed correctly; Install the correct drivers.
 Phone is not in fastboot USB mode. Remove USB Cable; remove & reinsert phone battery; hold volume down + power; select FASTBOOT; connect USB.
+
 Other unknown error. Extract rom.zip & flash manually via SD Card.
+
 ERROR [155 to 159]: IMAGE ERROR
 One of these error messages will appear when your device is S-ON & use the incorrect RUU having lower software number/hboot version than what is currently on your phone.
+
 FAILED (remote: not allowed)
 You did not reboot to RUU mode before running the flash command.
 You are trying to use a command that you cannot use on a Locked and/or S-ON device.
+
 (bootloader) [ERR] Command error !!! or INFO[ERR] Command error !!!
 You are trying to issue an invalid command.
 You are trying to use a command that you cannot use on a Locked and/or S-ON device.
+
 FAILED (remote: signature verify fail)The zip that you extracted is broken or the RUU you downloaded is is corrupted. Get the zip again or use a different RUU.
+
 FAILED (remote: 99 unknown fail)
 Your bootloader is still unlocked. You didn't relock your bootloader. Relock your bootloader using this command:
 Code:
 fastboot oem lock
 FAILED (remote: low battery)
+
 Battery is too low. Reboot to bootloader by typing
 Code:
 fastboot reboot-bootloader
 & let the phone charge for a while.
+
 FAILED (remote: 90 hboot pre-update! please flush image again immediately)
 Normal after Hboot version changes. You need to run only the flash command again (not the whole set of commands, just the fastboot flash command.)
+
 FAILED (remote: 42 custom id check fail)
 The RUU doesn't contain your CID. Either add your CID to the zip (needs S-OFF) or try changing your CID (usually works only on an S-OFF device)
+
 FAILED (remote: 92 supercid! please flush image again immediately)
 Your device is S-ON & has Super CID. You need to run only the flash command again (not the whole set of commands, just the fastboot flash command.)
+
 FAILED (remote: 43 main version check fail)
 Your device is S-ON & you are trying to use an RUU that has software number less than your current software number.
+
 FAILED (remote: 44 hboot version check fail)
 Your device is S-ON & you are trying to use an RUU that has hboot version less than your current hboot version.
+
 FAILED (status read failed (Too many links))
 Disregard & continue. It is not really an error as such.
+
 FAILED (data transfer failed (Too many links))
 Reboot the phone to fastboot USB. Remove USB Cable; remove & reinsert phone battery; hold volume down + power; select FASTBOOT; connect USB.
 Then, try the commands again.
+
 Any other error that says '(Too many links)'
 Reboot the phone to fastboot USB. Remove USB Cable; remove & reinsert phone battery; hold volume down + power; select FASTBOOT; connect USB.
 Then, try the commands again.
-If you still get the error, please post the complete error code here & when the error occurred so that it can be solved & added to this list.
+
+Too many links is also caused by a base version mismatch.  Flash the correct stock for your FW via RUU before continuing.
+
 Any other error that says 'please flush image again immediately'
 You need to run only the flash command again (not the whole set of commands, just the fastboot flash command.) Please post the complete error code here & when the error occurred so that it can be added to this list
-
+```
 
 
 
