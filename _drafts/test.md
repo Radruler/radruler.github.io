@@ -137,7 +137,7 @@ For my own tracking, here's my full workflow for cleaning a stock non-GPE rom be
 - Install Google Launcher, reboot, remove Prism [Phase 2]
 
 ```
-# Phase 1 / Safe
+# Phase 1 / oops this list is too agressive and breaks stuff
 
 /carrier/itson/*
 /system/vendor/itson/*
@@ -156,7 +156,15 @@ For my own tracking, here's my full workflow for cleaning a stock non-GPE rom be
 	mocanaKeyVpnF/
 	KidMode-google/
 	QXDM2SD/
+	HtcLogLevel/
+	MyHTC/
+	News_Republic/
+	MyGoogleTaskPlugin/
+	MyTask/
+	Smith/
 	PartnerBookmarksProvider/
+	Sprint_Smart_Device_Manager/
+
 
 /system/priv-app/
 	AndroidHtcSync/
@@ -182,7 +190,7 @@ For my own tracking, here's my full workflow for cleaning a stock non-GPE rom be
 	NeroHTCInstaller/			# sync
 	PNSClient/
 	PolarisOffice/
-	PrefAct/
+	PrefAct/					#sprint id
 	Sprint*/
 	Twitter/
 	Transfer/
@@ -199,15 +207,7 @@ For my own tracking, here's my full workflow for cleaning a stock non-GPE rom be
 	HtcAccessoryService/
 	HTCBackup*/
 	htcCarGps/
-	HtcLogLevel/
-	MyHTC/
-	News_Republic/
-	MyGoogleTaskPlugin/
-	MyTask/
-	PartnerBookmarksProvider/
-	Smith/
 	SPCS_vowifi/
-	Sprint_Smart_Device_Manager/
 
 /system/priv-app/
 	HTCSpeakCyberon/
