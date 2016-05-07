@@ -155,7 +155,6 @@ For my own tracking, here's my full workflow for cleaning a stock non-GPE rom be
 /system/app/
 	mocanaKeyVpnF/
 	KidMode-google/
-	??keychain/
 	QXDM2SD/
 	PartnerBookmarksProvider/
 
@@ -172,25 +171,22 @@ For my own tracking, here's my full workflow for cleaning a stock non-GPE rom be
 	FieldTrial/
 	HTCAdvantage/
 	HtcContactsDNATransfer/
-	HTC_IME/ 			# please make sure you have another keyboard installed first
+	HTC_IME/ 					# please make sure you have another keyboard installed first
 	HomePersonalize/
-	HtcDotMatrix/
+	HtcDotMatrix/				# lockscreen thing
 	HTCMode/
-	HTCZero/
+	HTCZero/					# htc reporting
 	ID/
-	Lookout/
-	Lucy/
-	NeroHTCInstaller/
+	Lookout/					# freeware
+	Lucy/						# drawing app
+	NeroHTCInstaller/			# sync
 	PNSClient/
 	PolarisOffice/
 	PrefAct/
 	Sprint*/
 	Twitter/
 	Transfer/
-	UDove/ #htc logging
-
-
-
+	UDove/ 						#htc logging
 
 
 # Phase 2 / Eh.
@@ -225,6 +221,8 @@ For my own tracking, here's my full workflow for cleaning a stock non-GPE rom be
 
 
 # Phase 2.5 / Breaking Things (ie. Phone)
+
+/system/app/
 	DeviceManagement/
 	DMAgent/
 	HTC_Connect/
@@ -245,16 +243,16 @@ For my own tracking, here's my full workflow for cleaning a stock non-GPE rom be
 	Mail/
 	ManagedProvisioning/
 	MirrorLink*/
-	Prism/ 					#be sure to install Now launcher first, Velvet might work
-	QtiTetherService/ #qualcomm
+	Prism/						# be sure to install Now launcher first, Velvet might work
+	QtiTetherService/			# qualcomm
 	UIBC/
 	TetheringGuard/
 	VideoTalkEnhancement/
 
 
 /system/framework/
-	com.qti*/
-	com.sprint.internal/
+	com.qti*/					# more qualcomm
+	com.sprint.internal*/
 
 
 # Phase 3 / I'd Rather Have These In Userland
